@@ -1,9 +1,33 @@
 const http = require('http');
+const path = require('path');
+const fs = require('fs');
 const url = require('url');
 
+
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+const dataObj = JSON.parse(data);
+
 const server = http.createServer((req, res)=>{
-    console.log(req.url);
-    res.end('Hello from the server');
+    
+    const pathName = req.url;
+
+    if(pathName === '/' || pathName === '/overview'){
+        res.end('Hello from OVERVIEW');
+    }else if(pathName === '/product'){
+        res.end('Hello from PRODUCT');
+    }else if(pathName === '/api'){
+
+        fs.readFile(`${__dirname}/dev-data/data.json`, 'utf-8', (err, data)=>{
+            const productData = JSON.parse(data);
+            res.writeHead(200, {'Content-type': 'application/json'});
+            res.end(data);
+        })
+    
+    }else{
+        res.writeHead(404);
+        res.end('page not found');
+    }
+    
 })
 
 server.listen(8000, '127.0.0.1', ()=>{
